@@ -27,7 +27,11 @@ public class Square : MonoBehaviour
     public void Num(int a)
     {
         tm.gameObject.SetActive(true);
-        tm.text = a.ToString();
+        if (a == 0) { tm.text = ""; }
+        else
+        {
+            tm.text = a.ToString();
+        }        
     }
     public void SetMine()
     {

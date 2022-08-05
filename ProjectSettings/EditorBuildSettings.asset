@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/LandMine/landMine.unity
+    guid: b5c3e90129701894ca203b322d1c3db7
   m_configObjects: {}

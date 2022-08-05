@@ -1,7 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
+using TMPro;
 public class LandMine : MonoBehaviour
 {
     public int size = 10;
@@ -9,10 +10,13 @@ public class LandMine : MonoBehaviour
     public GameObject cube;
     public LayerMask hitmask;
     public GameObject Dancer;
+    public GameObject GameOverUI;
+    public TextMeshPro MineCountText;
 
-    bool isStart = true;
+    public bool isStart = true;
     
     int mineCount =0;
+    int flagCount = 0;
 
     Square[,] squares;
 
@@ -39,6 +43,7 @@ public class LandMine : MonoBehaviour
                 {
                     squares[i, j].SetMine();
                     Debug.Log("SetMine");
+                    mineCount++;
                 }
             }
         }
@@ -52,47 +57,79 @@ public class LandMine : MonoBehaviour
     {
         if (isStart)
         {
+            MineCountText.text = (mineCount - flagCount).ToString();
             if (Input.GetMouseButtonDown(0))
             {
                 ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if (Physics.Raycast(ray, out hit, hitmask))
+                if (Physics.Raycast(ray, out hit, hitmask))//레이캐스트
                 {
                     Square hitSquare = hit.transform.GetComponent<Square>();
-                    if (!hitSquare.isClicked) // 처음클릭
+                    if(!hitSquare.isFlaged)// 깃발 아닐때
                     {
-                        hitSquare.isClicked = true;
-                        hitSquare.GetComponent<MeshRenderer>().material.color = Color.gray; //클릭됨- 색바꾸기
+                        if (!hitSquare.isClicked) // 처음클릭
+                        {
+                            ClickedSquare(hitSquare);
 
-                        if (!hitSquare.isMine) //지뢰아니면
-                        {                         
-                            hitSquare.Num(hitSquare.mineNum); //숫자표시
-                            if(hitSquare.mineNum == 0)//공백확장
+                            if (!hitSquare.isMine) //지뢰아니면
                             {
-                               ZeroExpand(hitSquare);
+                                hitSquare.Num(hitSquare.mineNum); //숫자표시
+                                if (hitSquare.mineNum == 0)//공백확장
+                                {
+                                    ZeroExpand(hitSquare);
+                                }
+                            }
+                            else //지뢰면
+                            {
+                                hitSquare.mine.SetActive(true); //지뢰표시
+                                hitSquare.GetComponent<MeshRenderer>().material.color = Color.red;
+                                RevealMine(); //모든지뢰 표시
+                                animator.enabled = false;
+                                isStart = false; //게임오버
                             }
                         }
-                        else //지뢰면
+                        else//이미 클릭-또 클릭
                         {
-                            hitSquare.mine.SetActive(true); //지뢰표시
-                            hitSquare.GetComponent<MeshRenderer>().material.color = Color.red;
-                            RevealMine();
-                            animator.enabled = false;
-                            isStart = false;
-                        }
-                    }
-                    else//이미 클릭
-                    {
-                        for (int i = 0; i < 9; i++)
-                        {
-                            if (hitSquare.boundary[i] != null)
+                            int flagNum = 0;
+                            for (int i = 0; i < 9; i++)
                             {
-                                hitSquare.boundary[i].GetComponent<MeshRenderer>().material.color = Color.gray; //색변화 -범위 체크
+                                if (hitSquare.boundary[i] != null)
+                                {
+                                    if (!hitSquare.boundary[i].isFlaged)
+                                    {
+                                        hitSquare.boundary[i].GetComponent<MeshRenderer>().material.color = Color.gray; //색변화 -범위 체크
+                                    }
+                                    if (hitSquare.boundary[i].isFlaged) { flagNum++; }//깃발개수세기
+                                    Debug.Log("flag" + flagNum);
+                                }
+                            }
+                            if (hitSquare.mineNum == flagNum)
+                            {
+                                Debug.Log(flagNum);
+                                for (int i = 0; i < 9; i++)
+                                {
+                                    if (hitSquare.boundary[i] != null && !hitSquare.boundary[i].isFlaged)
+                                    {
+                                        if (hitSquare.boundary[i].isMine) //지뢰면 == 깃발 잘못꼽음
+                                        {
+                                            hitSquare.boundary[i].mine.SetActive(true); //지뢰표시
+                                            hitSquare.boundary[i].GetComponent<MeshRenderer>().material.color = Color.red;
+                                            RevealMine(); //모든지뢰 표시
+                                            animator.enabled = false;
+                                            isStart = false; //게임오버
+                                        }
+                                        else
+                                        {
+                                            ClickedSquare(hitSquare.boundary[i]);
+                                            hitSquare.boundary[i].Num(hitSquare.boundary[i].mineNum);
+                                        }
+                                    }
+                                }
                             }
                         }
-                    }
+                    }          
                 }
             }
-            else if (Input.GetMouseButtonUp(0)) 
+            else if (Input.GetMouseButtonUp(0)) //원래 컬러 되돌리기
             {
                 for (int i = 0; i < size; i++)
                 {
@@ -118,19 +155,34 @@ public class LandMine : MonoBehaviour
                         {
                             hitSquare.Flag.SetActive(false);
                             hitSquare.isFlaged = false;
+                            flagCount--;
                         }
                         else
                         {
                             hitSquare.Flag.SetActive(true);
                             hitSquare.isFlaged = true;
+                            flagCount++;
                         }
                     }
                 }
             }
         }
+        else
+        {
+            GameOverUI.SetActive(true);
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                RestartScene();
+            }
+        }
         
     }
 
+    public void RestartScene()
+    {
+        SceneManager.LoadScene(0);
+    }
+    
     void SetBoundary()
     {
 
@@ -242,6 +294,16 @@ public class LandMine : MonoBehaviour
         }
     }
 
+    void ClickedSquare(Square s)
+    {
+        if (!s.isClicked)
+        {
+            s.transform.position = new Vector3(s.transform.position.x, s.transform.position.y, 0.1f);
+        }
+        s.isClicked = true;
+        s.GetComponent<MeshRenderer>().material.color = Color.gray; //클릭됨- 색바꾸기     
+    }
+
     void ZeroExpand(Square s)
     {
         for (int i = 0; i < 9; i++)
@@ -252,9 +314,10 @@ public class LandMine : MonoBehaviour
                 s.boundary[i].isClicked = true;
                 s.boundary[i].Num(s.boundary[i].mineNum);
 
-                //if(s.boundary[i].mineNum == 0)
+                //for (int j = 0; j < 3; j++)
                 //{
-                //    ZeroExpand(s.boundary[i]);
+                //    if (s.boundary[i].mineNum == 0)
+                //       ZeroExpand(s.boundary[i]);
                 //}
             }
         }
