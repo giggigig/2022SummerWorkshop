@@ -798,8 +798,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 994.7639, y: 406.13837}
-  m_SizeDelta: {x: 557, y: 128.4}
+  m_AnchoredPosition: {x: 994.7639, y: 66}
+  m_SizeDelta: {x: 328.4, y: 75.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &707879541
 MonoBehaviour:
@@ -822,7 +822,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.97137475, g: 1, b: 0.53207546, a: 1}
+    m_NormalColor: {r: 1, g: 0.36320752, b: 0.79106945, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.9811321, g: 0.5405482, b: 0.8722849, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -922,7 +922,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &790947878
 Transform:
   m_ObjectHideFlags: 0
@@ -1883,7 +1883,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: ReStart?
+  m_Text: restart?
 --- !u!222 &1427650619
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2384,7 +2384,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2068996495
 RectTransform:
   m_ObjectHideFlags: 0
