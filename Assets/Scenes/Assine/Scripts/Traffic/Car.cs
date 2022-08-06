@@ -27,7 +27,6 @@ public class Car : MonoBehaviour
     Vector3 velocity;
     bool isStoped;
 
-
     enum Signal
     {
         Green,
@@ -83,8 +82,8 @@ public class Car : MonoBehaviour
                 case Signal.Red:
                     isStoped = true;
                     inputMagnitude = 0;
-                    //deceleration = curDistance / viewDistance;
-                    yield return new WaitForSeconds(0.1f);
+                    //deceleration = curDistance / viewDistance; --> 감속구간 collider, damp 마지막 값 time 에 col 사이즈 재서 
+                    yield return new WaitForSeconds(0.1f); 
                     break;
 
                 case Signal.Yellow:

@@ -23,13 +23,14 @@ public class S_Player : MonoBehaviour
     Rigidbody rigidbody;
     bool disabled =false;
     Guard guard;
-
+    Animator animator;
     private void Start()
     {
         guard = FindObjectOfType<Guard>();
         scaleOrigin = transform.localScale;
         rigidbody = GetComponent<Rigidbody>(); //장애물 충돌 위한 rigidbody
         Guard.OnGuardHasSpottedPlayer += Disable;
+        animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -78,6 +79,16 @@ public class S_Player : MonoBehaviour
         angle = Mathf.LerpAngle(angle, targetAngle, Time.deltaTime * turnSpeed * inputMagnitude);//앵글의 중간값 구함 , 입력값(getAxis)이 0일때 간섭 방지
 
         velocity = transform.forward * moveSpeed * smoothInputMagnitude; //속도
+
+
+        if (smoothInputMagnitude > 0.5f)
+        {
+            animator.SetBool("bWalk", true);
+        }
+        else
+        {
+            animator.SetBool("bWalk", false);
+        }
     }
 
     void Disable()
